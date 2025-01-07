@@ -47,17 +47,30 @@ const createImage = async (req, res) => {
 };
 
 const getImagesByCategory = async (req, res) => {
-  const { categoryName } = req.params; 
+  const { categoryName } = req.params;
+  const skip = parseInt(req.query.skip) || 0;  
+  const limit = parseInt(req.query.limit) || 10;  
+  
   try {
     const category = await Category.findOne({ name: categoryName });
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
+
+
+    const totalImages = await Image.countDocuments({ category: category._id });
+    const totalPages = Math.ceil(totalImages / limit); 
+
     const images = await Image.find({ category: category._id })
       .populate("category")
-      .skip(req.query.skip || 0)
-      .limit(req.query.limit || 10);
-    res.status(200).json(images);
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json({
+      images,
+      totalPages, 
+      currentPage: Math.ceil((skip + 1) / limit), 
+    });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
