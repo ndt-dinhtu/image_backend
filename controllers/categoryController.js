@@ -6,13 +6,14 @@ const createCategory = async (req, res) => {
   try {
     const existingCategory = await Category.findOne({ name });
     if (existingCategory) {
-      return res.status(400).json({ message: "Category already exists" });
+      return res.status(400).json({ message: "Danh mục đã tồn tại" });
     }
     const category = new Category({ name, description });
     await category.save();
     res.status(201).json(category);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    console.error("Error in createCategory:", err);
+    res.status(500).json({ message: "Có lỗi xảy ra khi tạo danh mục." });
   }
 };
 const getCategories = async (req, res) => {
@@ -41,14 +42,14 @@ const deleteCategory = async (req, res) => {
     const images = await Image.find({ category: id });
     if (images && images.length > 0) {
       return res.status(400).json({
-        message: "Cannot delete category, there are images associated with it.",
+        message: "Không thể xóa danh mục, có hình ảnh liên quan đến nó.",
       });
     }
     const category = await Category.findByIdAndDelete(id);
     if (!category) {
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({ message: "Danh mục không tồn tại" });
     }
-    res.status(200).json({ message: "Category deleted successfully" });
+    res.status(200).json({ message: "Xóa danh mục thành công" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -60,7 +61,7 @@ const updateCategory = async (req, res) => {
   try {
     const existingCategory = await Category.findOne({ name });
     if (existingCategory && existingCategory._id.toString() !== id) {
-      return res.status(400).json({ message: "Category name already exists" });
+      return res.status(400).json({ message: "Tên danh mục đã tồn tại" });
     }
     const category = await Category.findByIdAndUpdate(
       id,
@@ -68,7 +69,7 @@ const updateCategory = async (req, res) => {
       { new: true }
     );
     if (!category) {
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({ message: "Danh mục không tồn tại" });
     }
     res.status(200).json(category);
   } catch (err) {
