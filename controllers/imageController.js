@@ -1,4 +1,4 @@
-const Image = require("../models/image");
+ const Image = require("../models/image");
 const Category = require("../models/category");
 const multer = require("multer");
 const fs = require("fs");

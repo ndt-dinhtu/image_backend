@@ -10,11 +10,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5174",
-      "http://localhost:5173",
-      "http://localhost:5175",
-    ],
+    origin: "*",
   })
 );
 app.use("/uploads", express.static("uploads"));
@@ -30,6 +26,6 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/images", imageRoutes);
 
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Server is running on port ${port}`);
 });
